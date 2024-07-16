@@ -1,0 +1,137 @@
+go atlas
+mesh space.multi=1
+x.m l= 0        spac=0.001
+x.m l= 0.01    spac=0.0005
+x.m l= 0.02    spac=0.0005
+x.m l= 0.03    spac=0.001
+x.m l= 0.04   spac=0.0005
+x.m l= 0.05    spac=0.0005
+x.m l= 0.06    spac=0.0005
+x.m l= 0.07    spac=0.0005
+#
+y.m l= 0.00     spac=0.001
+y.m l= 0.002    spac=0.0005
+y.m l= 0.005    spac=0.0005
+y.m l= 0.010    spac=0.0005
+y.m l= 0.015    spac=0.0005
+y.m l= 0.022    spac=0.0005
+
+#
+region num=1   x.min=0  x.max=0.070 y.min=0  y.max=0.022 user.material=Vacuum
+
+region num=2  x.min=0.010 x.max=0.060 y.min=0.016 y.max=0.017 material=SiO2
+#region num=3 x.min=0.040 x.max=0.060 y.min=0.016 y.max=0.017 material=HfO2
+
+region num=4  x.min=0.00 x.max=0.070 y.min=0.006 y.max=0.016 material=silicon
+region num=5  x.min=0.00 x.max=0.010 y.min=0.006 y.max=0.016 material=silicon
+
+region num=10 x.min=0.060 x.max=0.070 y.min=0.006 y.max=0.016 material=silicon
+
+ 
+#region num =12 x.min=0.030 x.max=0.040 y.min=0.015 y.max=0.016 material=nisi
+
+#region num=13  x.min=0.060 x.max=0.070 y.min=0.006 y.max=0.007 material=nisi
+
+#region num=14  x.min=0.010 x.max=0.030 y.min=0.005 y.max=0.006 material=HfO2
+region num=15 x.min=0.010 x.max=0.060 y.min=0.005 y.max=0.006 material=SiO2
+
+#region num=16  x.min=0.010 x.max=0.015 y.min=0.011 y.max=0.021 material=silicon
+#region num=17  x.min=0.115 x.max=0.12 y.min=0.011 y.max=0.021 material=silicon
+#region num=18  x.min=0.0105 x.max=0.115 y.min=0.011 y.max=0.021 material=silicon
+#save outf=r.str
+#tonyplot r.str
+#quit
+#
+electrode name=gate x.min=0.010 x.max=0.050 y.min=0.00 y.max=0.005
+#electrode name=gate2 x.min=0.010 x.max=0.030 y.min=0.017 y.max=0.022
+#electrode name=gate3 x.min=0.040 x.max=0.060 y.min=0.017 y.max=0.022
+electrode name=gate4 x.min=0.010 x.max=0.050 y.min=0.017 y.max=0.022
+electrode name=source x.min=0.00 x.max=0.010 y.min=0.007 y.max=0.016
+#electrode name=source1   x.min=0.060 x.max=0.070 y.min=0.006 y.max=0.016
+electrode name=drain x.min=0.060 x.max=0.070 y.min=0.007 y.max=0.016
+#electrode name=drain1 x.min=0.030 x.max=0.040 y.min=0.015 y.max=0.016
+
+ 
+
+#electrode name=drain1 x.min=0.060 x.max=0.070 y.min=0.020 y.max=0.021
+#
+#doping  region=4 gauss concentration=1E17 p.type char=0.01 ratio.lat=1.0
+#doping  region=5 gauss concentration=1E17 p.type char=0.01 ratio.lat=1.0
+doping  region=5 uniform concentration=2E16 p.type
+doping  region=10 uniform concentration=5E18 n.type
+#doping  region=12 uniform concentration=1E16 n.type
+#doping  region=13 uniform concentration=5E18 n.type
+doping uniform concentration=6E15 n.type region=4
+
+
+#doping uniform concentration=1E18 n.type region=16
+#doping uniform concentration=1E18 n.type region=17
+#doping uniform concentration=1E17 p.type region=18
+#
+#material name=silicon affinity=4.17 EG300=1.12
+#
+
+
+#
+contact name= gate workfun=4.9
+contact name= gate4 neutral common=gate
+#contact name= gate3 workfun=4.9 common=gate
+#contact name= gate4 workfun=4.9 common=gate
+contact name= source neutral
+#contact name= source1 workfun=4.57 common=source
+contact name= drain neutral 
+#contact name= drain1  workfun=4.5 common=drain
+#
+#interf qf=3e10
+#
+#inttrap intname = "SiGe/silicon" acceptor e.level=0.8 density=1e12 degen.fac=1 sign=1e-15 sigp=1e-15
+#
+#output  con.band val.band qfn qfp impact.i schottky flowlines e.mobility e.velocity charge j.drift j.total j.diffusion e.field recombination
+#INTERFACE QF=-3e12 x.min= 0.01 x.max=0.06 y.min=0.003 y.max=0.006
+
+#
+ models conmob srh auger bgn fldmob print bbt.kane a.btbt=4e19 b.btbt=41e6 bbt.gamma=2
+#
+#Section 7: Solvingthe simulation
+solve init
+#
+method gummel newton
+#
+
+solve vdrain=0.5
+#solve vdrain=1
+#for output characteristics uncommentlines below
+#solve vgate=-0
+#solve vgate=-1
+#solve vgate=-1.5
+#solve vgate=-2
+#
+# rampthe gatevoltage
+log outf=t.log master
+solve vgate=0 vstep=0.1 name=gate vfinal=1 ac freq=1e6
+#for output characteristics uncommentline below
+# solve vdrain=0vstep=-0.1name=drainvfinal=-3
+output val.band con.bandu.bbtcharge e.lines band.param
+save outf=t.str
+#Section 8: Readingthe results
+tonyplot t.log
+tonyplot t.str
+
+#extract name="vt1" x.val from curve ((v."gate"),log10(abs(i."drain"))) where y.val=-7
+
+extract name="subvt" 1.0/slope(maxslope(curve(v."gate",log10(abs(i."drain")))))
+extract name="Ioff_n" y.val from curve(v."gate",i."drain") where x.val=0
+extract name="Ion_n" y.val from curve(v."gate",i."drain") where x.val=1
+extract name="Ion_Ioff" $Ion_n/$Ioff_n 
+#extract init infile="m.log"
+extract name = "dydx"deriv(v."gate",i."drain") outfile = "m.dat"
+extract name = "dydx2"deriv(v."gate",i."drain",2) outfile = "n.dat"
+extract name = "dydx3"deriv(v."gate",i."drain",3) outfile = "o.dat"
+#extract name="vt" xintercept(maxslope(curve(abs(v."gate",abs(i."drain")))) - ave(v."drain")/2 outfile="q.dat"
+#extract name="max.gate-source Vgs=0"max(curve(frequency,C."Gate""Source")) outfile = "p.dat"
+#extract name = "Rdrain-gate[Max]"max(1.0/(abs(g."drain""gate")))outfile = "b.dat"
+#extract name="vt" xintercept(maxslope(curve(abs(v."gate",abs(i."drain")))))outfile = "p1.dat"
+#extract name="max.gate-source cap Vgs=0"max(curve(frequency,C."Gate""Source")) outfile = "p.dat"
+#extract name ="Xint for idVg" xintercept(maxslope(curve(i."drain",v."gate"))) outfile="q.dat"
+
+quit
